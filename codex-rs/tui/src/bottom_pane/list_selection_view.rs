@@ -578,7 +578,7 @@ impl Renderable for ListSelectionView {
                 Layout::vertical([Constraint::Fill(1), Constraint::Length(1)]).areas(header_area);
             self.header.render(header_area, buf);
             Paragraph::new(vec![
-                Line::from(format!("[… {header_height} lines] ctrl + a view all")).dim(),
+                Line::from(format!("[… {header_height} 行] ctrl + a 查看全部")).dim(),
             ])
             .render(elision_area, buf);
         } else {
@@ -612,7 +612,7 @@ impl Renderable for ListSelectionView {
                     &rows,
                     &self.state,
                     render_area.height as usize,
-                    "no matches",
+                    "无匹配项",
                 ),
                 ColumnWidthMode::AutoAllRows => render_rows_stable_col_widths(
                     render_area,
@@ -620,7 +620,7 @@ impl Renderable for ListSelectionView {
                     &rows,
                     &self.state,
                     render_area.height as usize,
-                    "no matches",
+                    "无匹配项",
                 ),
                 ColumnWidthMode::Fixed => render_rows_with_col_width_mode(
                     render_area,
@@ -628,7 +628,7 @@ impl Renderable for ListSelectionView {
                     &rows,
                     &self.state,
                     render_area.height as usize,
-                    "no matches",
+                    "无匹配项",
                     ColumnWidthMode::Fixed,
                 ),
             };

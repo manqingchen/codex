@@ -10,4 +10,4 @@ expression: terminal.backend()
 "                                        "
 "                                        "
 "                                        "
-"  tab to queue        98% context left  "
+"  tab 排队发送消息      98% 上下文剩余  " Hidden by multi-width symbols: [(7, " "), (9, " "), (11, " "), (13, " "), (15, " "), (17, " "), (29, " "), (31, " "), (33, " "), (35, " "), (37, " ")]

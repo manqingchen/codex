@@ -2,4 +2,4 @@
 source: tui/src/bottom_pane/footer.rs
 expression: terminal.backend()
 ---
-"  ? for shortcuts · Plan mode                                                                        100% context left  "
+"  ? 查看快捷键 · 计划模式                                                                              100% 上下文剩余  " Hidden by multi-width symbols: [(5, " "), (7, " "), (9, " "), (11, " "), (13, " "), (18, " "), (20, " "), (22, " "), (24, " "), (109, " "), (111, " "), (113, " "), (115, " "), (117, " ")]

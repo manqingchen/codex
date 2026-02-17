@@ -37,21 +37,19 @@ use codex_protocol::request_user_input::RequestUserInputResponse;
 use codex_protocol::user_input::TextElement;
 use unicode_width::UnicodeWidthStr;
 
-const NOTES_PLACEHOLDER: &str = "Add notes";
-const ANSWER_PLACEHOLDER: &str = "Type your answer (optional)";
+const NOTES_PLACEHOLDER: &str = "添加备注";
+const ANSWER_PLACEHOLDER: &str = "请输入答案（可选）";
 // Keep in sync with ChatComposer's minimum composer height.
 const MIN_COMPOSER_HEIGHT: u16 = 3;
-const SELECT_OPTION_PLACEHOLDER: &str = "Select an option to add notes";
+const SELECT_OPTION_PLACEHOLDER: &str = "请先选择一个选项再添加备注";
 pub(super) const TIP_SEPARATOR: &str = " | ";
 pub(super) const DESIRED_SPACERS_BETWEEN_SECTIONS: u16 = 2;
-const OTHER_OPTION_LABEL: &str = "None of the above";
-const OTHER_OPTION_DESCRIPTION: &str = "Optionally, add details in notes (tab).";
-const UNANSWERED_CONFIRM_TITLE: &str = "Submit with unanswered questions?";
-const UNANSWERED_CONFIRM_GO_BACK: &str = "Go back";
-const UNANSWERED_CONFIRM_GO_BACK_DESC: &str = "Return to the first unanswered question.";
-const UNANSWERED_CONFIRM_SUBMIT: &str = "Proceed";
-const UNANSWERED_CONFIRM_SUBMIT_DESC_SINGULAR: &str = "question";
-const UNANSWERED_CONFIRM_SUBMIT_DESC_PLURAL: &str = "questions";
+const OTHER_OPTION_LABEL: &str = "以上都不是";
+const OTHER_OPTION_DESCRIPTION: &str = "可在备注中补充细节（tab）。";
+const UNANSWERED_CONFIRM_TITLE: &str = "存在未回答问题，仍要提交吗？";
+const UNANSWERED_CONFIRM_GO_BACK: &str = "返回";
+const UNANSWERED_CONFIRM_GO_BACK_DESC: &str = "返回第一个未回答的问题。";
+const UNANSWERED_CONFIRM_SUBMIT: &str = "继续提交";
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 enum Focus {
@@ -431,32 +429,32 @@ impl RequestUserInputOverlay {
         let notes_visible = self.notes_ui_visible();
         if self.has_options() {
             if self.selected_option_index().is_some() && !notes_visible {
-                tips.push(FooterTip::highlighted("tab to add notes"));
+                tips.push(FooterTip::highlighted("tab 添加备注"));
             }
             if self.selected_option_index().is_some() && notes_visible {
-                tips.push(FooterTip::new("tab or esc to clear notes"));
+                tips.push(FooterTip::new("tab 或 esc 清空备注"));
             }
         }
 
         let question_count = self.question_count();
         let is_last_question = self.current_index().saturating_add(1) >= question_count;
         let enter_tip = if question_count == 1 {
-            FooterTip::highlighted("enter to submit answer")
+            FooterTip::highlighted("enter 提交当前答案")
         } else if is_last_question {
-            FooterTip::highlighted("enter to submit all")
+            FooterTip::highlighted("enter 提交全部")
         } else {
-            FooterTip::new("enter to submit answer")
+            FooterTip::new("enter 提交当前答案")
         };
         tips.push(enter_tip);
         if question_count > 1 {
             if self.has_options() && !self.focus_is_notes() {
-                tips.push(FooterTip::new("←/→ to navigate questions"));
+                tips.push(FooterTip::new("←/→ 切换问题"));
             } else if !self.has_options() {
-                tips.push(FooterTip::new("ctrl + p / ctrl + n change question"));
+                tips.push(FooterTip::new("ctrl + p / ctrl + n 切换问题"));
             }
         }
         if !(self.has_options() && notes_visible) {
-            tips.push(FooterTip::new("esc to interrupt"));
+            tips.push(FooterTip::new("esc 中断"));
         }
         tips
     }
@@ -785,12 +783,7 @@ impl RequestUserInputOverlay {
 
     fn unanswered_submit_description(&self) -> String {
         let count = self.unanswered_question_count();
-        let suffix = if count == 1 {
-            UNANSWERED_CONFIRM_SUBMIT_DESC_SINGULAR
-        } else {
-            UNANSWERED_CONFIRM_SUBMIT_DESC_PLURAL
-        };
-        format!("Submit with {count} unanswered {suffix}.")
+        format!("提交时包含 {count} 个未回答问题。")
     }
 
     fn first_unanswered_index(&self) -> Option<usize> {
@@ -1431,7 +1424,7 @@ mod tests {
                     description: "Select this when you specifically want to verify that navigating downward will keep the currently highlighted option visible, even when previous options consume many wrapped lines and would otherwise push the selection out of the viewport.".to_string(),
                 },
                 RequestUserInputQuestionOption {
-                    label: "None of the above".to_string(),
+                    label: "以上都不是".to_string(),
                     description:
                         "Use this only if the previous long-form options do not apply.".to_string(),
                 },
@@ -1761,10 +1754,10 @@ mod tests {
         assert_eq!(
             tip_texts,
             vec![
-                "tab to add notes",
-                "enter to submit answer",
-                "←/→ to navigate questions",
-                "esc to interrupt",
+                "tab 添加备注",
+                "enter 提交当前答案",
+                "←/→ 切换问题",
+                "esc 中断",
             ]
         );
 
@@ -1773,7 +1766,7 @@ mod tests {
         let tip_texts = tips.iter().map(|tip| tip.text.as_str()).collect::<Vec<_>>();
         assert_eq!(
             tip_texts,
-            vec!["tab or esc to clear notes", "enter to submit answer",]
+            vec!["tab 或 esc 清空备注", "enter 提交当前答案",]
         );
     }
 
@@ -1799,11 +1792,7 @@ mod tests {
         let tip_texts = tips.iter().map(|tip| tip.text.as_str()).collect::<Vec<_>>();
         assert_eq!(
             tip_texts,
-            vec![
-                "enter to submit all",
-                "ctrl + p / ctrl + n change question",
-                "esc to interrupt",
-            ]
+            vec!["enter 提交全部", "ctrl + p / ctrl + n 切换问题", "esc 中断",]
         );
     }
 
@@ -2352,7 +2341,7 @@ mod tests {
 
         let rows = overlay.option_rows();
         let other_row = rows.last().expect("expected none-of-the-above row");
-        assert_eq!(other_row.name, "  4. None of the above");
+        assert_eq!(other_row.name, "  4. 以上都不是");
         assert_eq!(
             other_row.description.as_deref(),
             Some(OTHER_OPTION_DESCRIPTION)
